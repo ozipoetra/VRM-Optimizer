@@ -17,6 +17,7 @@ import {
   type OptimizationProgress,
 } from './utils/vrmOptimizer'
 import { isWebGPUSupported, loadVRMWebGPU } from './utils/vrmLoader'
+import { Menu, Zap, Plus, Eye, Smile, Info, AlertCircle, CheckCircle } from 'lucide-react'
 
 type TabType = 'optimize' | 'expressions' | 'info'
 
@@ -175,9 +176,7 @@ function App() {
         <div className="toast toast-top toast-end z-[100] p-4 gap-2">
           {error && (
             <div className="alert alert-error shadow-lg max-w-sm animate-slide-in">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <AlertCircle className="h-5 w-5 shrink-0" />
               <div className="flex-1">
                 <h3 className="font-bold text-sm">Error</h3>
                 <p className="text-xs">{error}</p>
@@ -187,9 +186,7 @@ function App() {
           )}
           {success && (
             <div className="alert alert-success shadow-lg max-w-sm animate-slide-in">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <CheckCircle className="h-5 w-5 shrink-0" />
               <div className="flex-1">
                 <p className="text-sm font-medium">{success}</p>
               </div>
@@ -202,15 +199,11 @@ function App() {
         <div className="navbar bg-base-100 border-b border-base-200 px-4 lg:px-6 sticky top-0 z-40 shadow-sm">
           <div className="navbar-start gap-2">
             <label htmlFor="app-drawer" className="btn btn-ghost btn-square btn-sm lg:hidden">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              <Menu className="h-5 w-5" />
             </label>
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                <svg className="w-5 h-5 text-primary-content" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+                <Zap className="w-5 h-5 text-primary-content" strokeWidth={2.5} />
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-base font-bold leading-tight">VRM Optimizer</h1>
@@ -238,9 +231,7 @@ function App() {
             </div>
             {vrm && (
               <button className="btn btn-ghost btn-sm gap-1.5" onClick={handleNewModel}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                </svg>
+                <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">New Model</span>
               </button>
             )}
@@ -257,10 +248,7 @@ function App() {
                   <div className="card-body p-3 md:p-4">
                     <div className="flex items-center justify-between mb-3">
                       <h2 className="card-title text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
+                        <Eye className="h-4 w-4 text-primary" />
                         3D Preview
                       </h2>
                       <div className="badge badge-ghost badge-xs gap-1">
@@ -288,9 +276,7 @@ function App() {
                       className={`tab gap-2 ${activeTab === 'optimize' ? 'tab-active [--tab-bg:var(--color-base-200)]' : ''}`}
                       onClick={() => setActiveTab('optimize')}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
+                      <Zap className="h-4 w-4" />
                       <span className="hidden sm:inline">Optimize</span>
                     </button>
                     <button
@@ -298,9 +284,7 @@ function App() {
                       className={`tab gap-2 ${activeTab === 'expressions' ? 'tab-active [--tab-bg:var(--color-base-200)]' : ''}`}
                       onClick={() => setActiveTab('expressions')}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                      <Smile className="h-4 w-4" />
                       <span className="hidden sm:inline">Expressions</span>
                     </button>
                     <button
@@ -308,9 +292,7 @@ function App() {
                       className={`tab gap-2 ${activeTab === 'info' ? 'tab-active [--tab-bg:var(--color-base-200)]' : ''}`}
                       onClick={() => setActiveTab('info')}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                      <Info className="h-4 w-4" />
                       <span className="hidden sm:inline">Info</span>
                     </button>
                   </div>
@@ -349,9 +331,7 @@ function App() {
         <footer className="footer footer-center p-4 bg-base-200 border-t border-base-300 text-base-content/50 text-xs">
           <aside className="flex items-center gap-2">
             <div className="w-5 h-5 bg-gradient-to-br from-primary to-secondary rounded-md flex items-center justify-center">
-              <svg className="w-3 h-3 text-primary-content" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+              <Zap className="w-3 h-3 text-primary-content" strokeWidth={2.5} />
             </div>
             <p>VRM Optimizer — Built with React, Three.js & DaisyUI</p>
           </aside>
@@ -366,9 +346,7 @@ function App() {
           <div className="p-5 bg-gradient-to-br from-primary/10 to-secondary/10 border-b border-base-300">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
-                <svg className="w-7 h-7 text-primary-content" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+                <Zap className="w-7 h-7 text-primary-content" strokeWidth={2.5} />
               </div>
               <div>
                 <h2 className="font-bold text-lg">VRM Optimizer</h2>
@@ -384,9 +362,7 @@ function App() {
                 className={`gap-3 rounded-xl ${activeTab === 'optimize' ? 'active bg-primary/10 text-primary' : ''}`}
                 onClick={() => { setActiveTab('optimize'); document.getElementById('app-drawer')?.click() }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+                <Zap className="h-5 w-5" />
                 Optimize
               </button>
             </li>
@@ -395,9 +371,7 @@ function App() {
                 className={`gap-3 rounded-xl ${activeTab === 'expressions' ? 'active bg-primary/10 text-primary' : ''}`}
                 onClick={() => { setActiveTab('expressions'); document.getElementById('app-drawer')?.click() }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <Smile className="h-5 w-5" />
                 Expressions
               </button>
             </li>
@@ -406,9 +380,7 @@ function App() {
                 className={`gap-3 rounded-xl ${activeTab === 'info' ? 'active bg-primary/10 text-primary' : ''}`}
                 onClick={() => { setActiveTab('info'); document.getElementById('app-drawer')?.click() }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <Info className="h-5 w-5" />
                 Model Info
               </button>
             </li>
