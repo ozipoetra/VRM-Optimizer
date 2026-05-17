@@ -47,13 +47,30 @@ export async function optimizeVRM(vrm: VRM, options: OptimizationOptions) {
     return result.value
   } catch (err) {
     const message = err instanceof Error ? err.message : ''
-    if (message.includes('mergeAttributes') || message.includes('array types')) {
-      console.warn('Mesh simplification failed due to inconsistent buffer types, retrying without simplification...')
+    if (
+      message.includes('mergeAttributes') ||
+      message.includes('mergeGeometries') ||
+      message.includes('array types') ||
+      message.includes('skinIndex')
+    ) {
+      console.warn('Mesh simplification failed due to incompatible geometry, retrying without simplification...')
+      try {
+        const result = await optimizeModel(vrm, {
+          migrateVRM0ToVRM1: options.migrateVRM0ToVRM1,
+          atlas: {
+            defaultResolution: options.atlasResolution,
+          },
+        })
+
+        if (result.isOk()) {
+          return result.value
+        }
+      } catch {
+        console.warn('Atlas merging also failed, falling back to migration only...')
+      }
+
       const result = await optimizeModel(vrm, {
         migrateVRM0ToVRM1: options.migrateVRM0ToVRM1,
-        atlas: {
-          defaultResolution: options.atlasResolution,
-        },
       })
 
       if (result.isErr()) {
