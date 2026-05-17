@@ -26,6 +26,7 @@ export function OptimizationPanel({
   const [atlasResolution, setAtlasResolution] = useState(2048)
   const [simplifyRatio, setSimplifyRatio] = useState(0.5)
   const [textureCompression, setTextureCompression] = useState(false)
+  const [webpQuality, setWebpQuality] = useState(80)
 
   const handleOptimize = () => {
     onOptimize({
@@ -33,6 +34,7 @@ export function OptimizationPanel({
       atlasResolution,
       simplifyRatio,
       textureCompression,
+      webpQuality,
     })
   }
 
@@ -162,6 +164,37 @@ export function OptimizationPanel({
             checked={textureCompression}
             onChange={(e) => setTextureCompression(e.target.checked)}
           />
+        </div>
+
+        {/* WebP Quality */}
+        <div className="p-3 bg-base-100 rounded-xl border border-base-300">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <div className="flex justify-between items-center">
+                <label className="font-medium text-sm">WebP Export</label>
+                <span className="badge badge-warning badge-sm">{webpQuality}%</span>
+              </div>
+              <p className="text-xs text-base-content/50 mt-0.5">Converts textures to WebP on export</p>
+            </div>
+          </div>
+          <input
+            type="range"
+            min="10"
+            max="100"
+            step="5"
+            value={webpQuality}
+            onChange={(e) => setWebpQuality(Number(e.target.value))}
+            className="range range-warning range-sm"
+          />
+          <div className="flex justify-between text-xs text-base-content/40 mt-2">
+            <span>Smaller size</span>
+            <span>Better quality</span>
+          </div>
         </div>
       </div>
 

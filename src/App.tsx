@@ -9,6 +9,7 @@ import {
   loadVRMFile,
   optimizeVRM,
   exportVRMFile,
+  exportVRMFileWithWebP,
   getModelStats,
   formatFileSize,
   type OptimizationOptions,
@@ -31,6 +32,7 @@ function App() {
   const [fileName, setFileName] = useState<string>('')
   const [activeTab, setActiveTab] = useState<TabType>('optimize')
   const [useWebGPU, setUseWebGPU] = useState<boolean | null>(null)
+  const [lastOptions, setLastOptions] = useState<OptimizationOptions | null>(null)
 
   useEffect(() => {
     isWebGPUSupported().then((supported) => {
@@ -85,6 +87,7 @@ function App() {
       setIsOptimizing(true)
       setError(null)
       setSuccess(null)
+      setLastOptions(options)
 
       try {
         await optimizeVRM(vrm, options)
@@ -111,21 +114,32 @@ function App() {
     setSuccess(null)
 
     try {
-      const buffer = await exportVRMFile(targetVrm)
+      let buffer: ArrayBuffer
+      const useWebP = lastOptions && lastOptions.webpQuality < 100
+      let exportName = optimizedVrm ? 'optimized_' + fileName : fileName
+
+      if (useWebP) {
+        buffer = await exportVRMFileWithWebP(targetVrm, lastOptions!.webpQuality / 100)
+        const baseName = exportName.replace(/\.vrm$/i, '')
+        exportName = baseName + '_webp.vrm'
+      } else {
+        buffer = await exportVRMFile(targetVrm)
+      }
+
       const blob = new Blob([buffer], { type: 'application/octet-stream' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = optimizedVrm ? 'optimized_' + fileName : fileName
+      a.download = exportName
       a.click()
       URL.revokeObjectURL(url)
-      setSuccess('Model exported successfully!')
+      setSuccess(`Model exported${useWebP ? ' with WebP textures' : ''}!`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to export VRM file')
     } finally {
       setIsExporting(false)
     }
-  }, [vrm, optimizedVrm, fileName])
+  }, [vrm, optimizedVrm, fileName, lastOptions])
 
   const handleNewModel = useCallback(() => {
     setVrm(null)

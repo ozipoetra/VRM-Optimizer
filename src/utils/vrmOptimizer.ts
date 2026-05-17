@@ -7,6 +7,7 @@ export interface OptimizationOptions {
   atlasResolution: number
   simplifyRatio: number
   textureCompression: boolean
+  webpQuality: number
 }
 
 export interface ModelStats {
@@ -88,6 +89,12 @@ export async function exportVRMFile(vrm: VRM) {
     throw result.error
   }
   return result.value
+}
+
+export async function exportVRMFileWithWebP(vrm: VRM, quality: number = 0.8) {
+  const buffer = await exportVRMFile(vrm)
+  const { convertTexturesToWebP } = await import('./webpOptimizer')
+  return convertTexturesToWebP(buffer, { quality })
 }
 
 export function getModelStats(vrm: VRM): ModelStats {
