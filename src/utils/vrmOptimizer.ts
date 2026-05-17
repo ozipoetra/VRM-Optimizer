@@ -26,24 +26,43 @@ export async function loadVRMFile(file: File) {
 }
 
 export async function optimizeVRM(vrm: VRM, options: OptimizationOptions) {
-  const result = await optimizeModel(vrm, {
-    migrateVRM0ToVRM1: options.migrateVRM0ToVRM1,
-    atlas: {
-      defaultResolution: options.atlasResolution,
-    },
-    simplify: {
-      targetRatio: options.simplifyRatio,
-      targetError: 0.01,
-      lockBorder: true,
-      uvWeight: 1.0,
-      normalWeight: 0.5,
-    },
-  })
+  try {
+    const result = await optimizeModel(vrm, {
+      migrateVRM0ToVRM1: options.migrateVRM0ToVRM1,
+      atlas: {
+        defaultResolution: options.atlasResolution,
+      },
+      simplify: {
+        targetRatio: options.simplifyRatio,
+        targetError: 0.01,
+        lockBorder: true,
+        uvWeight: 1.0,
+        normalWeight: 0.5,
+      },
+    })
 
-  if (result.isErr()) {
-    throw result.error
+    if (result.isErr()) {
+      throw result.error
+    }
+    return result.value
+  } catch (err) {
+    const message = err instanceof Error ? err.message : ''
+    if (message.includes('mergeAttributes') || message.includes('array types')) {
+      console.warn('Mesh simplification failed due to inconsistent buffer types, retrying without simplification...')
+      const result = await optimizeModel(vrm, {
+        migrateVRM0ToVRM1: options.migrateVRM0ToVRM1,
+        atlas: {
+          defaultResolution: options.atlasResolution,
+        },
+      })
+
+      if (result.isErr()) {
+        throw result.error
+      }
+      return result.value
+    }
+    throw err
   }
-  return result.value
 }
 
 export async function exportVRMFile(vrm: VRM) {
