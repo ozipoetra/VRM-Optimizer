@@ -7,9 +7,10 @@ import { createWebGPURenderer, createWebGLRenderer } from '../utils/vrmLoader'
 interface VRMViewerProps {
   vrm: VRM | null
   useWebGPU: boolean
+  isPaused: boolean
 }
 
-export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
+export function VRMViewer({ vrm, useWebGPU, isPaused }: VRMViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<any>(null)
   const sceneRef = useRef<THREE.Scene | null>(null)
@@ -105,6 +106,8 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
       const animate = () => {
         animationIdRef.current = requestAnimationFrame(animate)
 
+        if (isPaused) return
+
         const delta = timerRef.current.getDelta()
 
         if (currentVRMRef.current) {
@@ -152,7 +155,7 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
       setVrmReady(false)
     }
 
-    if (vrm) {
+    if (vrm && !isPaused) {
       sceneRef.current.add(vrm.scene)
       currentVRMRef.current = vrm
 
@@ -180,16 +183,30 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
 
       setVrmReady(true)
     }
-  }, [vrm])
+  }, [vrm, isPaused])
 
   return (
     <div className="relative w-full h-full">
       <div ref={containerRef} className="w-full h-full" />
 
+      {/* Paused overlay */}
+      {isPaused && (
+        <div className="absolute inset-0 bg-base-300/90 backdrop-blur-sm flex flex-col items-center justify-center z-10">
+          <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-primary animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <p className="text-base font-semibold">Preview Paused</p>
+          <p className="text-sm text-base-content/60 mt-1">Resuming after optimization...</p>
+        </div>
+      )}
+
       {/* Top controls */}
-      <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
-        <div className="flex items-center gap-2">
-          <div className="mockup-window bg-base-300/80 backdrop-blur-sm">
+      {!isPaused && (
+        <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
+          <div className="flex items-center gap-2">
+            <div className="mockup-window bg-base-300/80 backdrop-blur-sm">
             <div className="flex items-center gap-1 px-3 py-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-error/70"></div>
               <div className="w-2.5 h-2.5 rounded-full bg-warning/70"></div>
@@ -217,10 +234,11 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
           </svg>
           Reset
         </button>
-      </div>
+        </div>
+      )}
 
       {/* Bottom info */}
-      {vrm && (
+      {vrm && !isPaused && (
         <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
           <div className="badge badge-ghost bg-base-300/80 backdrop-blur-sm gap-1.5">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">

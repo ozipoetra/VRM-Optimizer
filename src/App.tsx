@@ -268,7 +268,7 @@ function App() {
                       </div>
                     </div>
                     <div className="h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] rounded-xl overflow-hidden bg-base-300">
-                      <VRMViewer vrm={optimizedVrm || vrm} useWebGPU={useWebGPU} />
+                      <VRMViewer vrm={optimizedVrm || vrm} useWebGPU={useWebGPU} isPaused={isOptimizing} />
                     </div>
                   </div>
                 </div>
