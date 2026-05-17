@@ -1,4 +1,4 @@
-import { loadVRM, optimizeModel, exportVRM } from '@webxr-jp/avatar-optimizer'
+import { loadVRM, exportVRM } from '@webxr-jp/avatar-optimizer'
 import type { VRM } from '@pixiv/three-vrm'
 import * as THREE from 'three'
 
@@ -18,6 +18,23 @@ export interface ModelStats {
   fileSize: number
 }
 
+export type OptimizationStep =
+  | 'idle'
+  | 'migrating'
+  | 'atlas'
+  | 'simplify'
+  | 'complete'
+  | 'error'
+
+export interface OptimizationProgress {
+  step: OptimizationStep
+  current: number
+  total: number
+  message: string
+}
+
+export type ProgressCallback = (progress: OptimizationProgress) => void
+
 export async function loadVRMFile(file: File) {
   const result = await loadVRM(file)
   if (result.isErr()) {
@@ -26,7 +43,20 @@ export async function loadVRMFile(file: File) {
   return result.value
 }
 
-export async function optimizeVRM(vrm: VRM, options: OptimizationOptions) {
+export async function optimizeVRM(
+  vrm: VRM,
+  options: OptimizationOptions,
+  onProgress?: ProgressCallback
+) {
+  const { optimizeModel } = await import('@webxr-jp/avatar-optimizer')
+
+  const report = (step: OptimizationStep, current: number, total: number, message: string) => {
+    onProgress?.({ step, current, total, message })
+  }
+
+  report('migrating', 1, 3, 'Migrating VRM0 to VRM1...')
+  await yieldToMain()
+
   try {
     const result = await optimizeModel(vrm, {
       migrateVRM0ToVRM1: options.migrateVRM0ToVRM1,
@@ -42,9 +72,17 @@ export async function optimizeVRM(vrm: VRM, options: OptimizationOptions) {
       },
     })
 
+    report('atlas', 2, 3, 'Merging texture atlas...')
+    await yieldToMain()
+
     if (result.isErr()) {
       throw result.error
     }
+
+    report('simplify', 3, 3, 'Simplifying meshes...')
+    await yieldToMain()
+
+    report('complete', 3, 3, 'Optimization complete!')
     return result.value
   } catch (err) {
     const message = err instanceof Error ? err.message : ''
@@ -55,6 +93,9 @@ export async function optimizeVRM(vrm: VRM, options: OptimizationOptions) {
       message.includes('skinIndex')
     ) {
       console.warn('Mesh simplification failed due to incompatible geometry, retrying without simplification...')
+      report('atlas', 2, 3, 'Falling back to atlas only...')
+      await yieldToMain()
+
       try {
         const result = await optimizeModel(vrm, {
           migrateVRM0ToVRM1: options.migrateVRM0ToVRM1,
@@ -64,10 +105,13 @@ export async function optimizeVRM(vrm: VRM, options: OptimizationOptions) {
         })
 
         if (result.isOk()) {
+          report('complete', 3, 3, 'Optimization complete (atlas only)!')
           return result.value
         }
       } catch {
         console.warn('Atlas merging also failed, falling back to migration only...')
+        report('simplify', 3, 3, 'Falling back to migration only...')
+        await yieldToMain()
       }
 
       const result = await optimizeModel(vrm, {
@@ -75,12 +119,19 @@ export async function optimizeVRM(vrm: VRM, options: OptimizationOptions) {
       })
 
       if (result.isErr()) {
+        report('error', 3, 3, 'Optimization failed')
         throw result.error
       }
+      report('complete', 3, 3, 'Optimization complete (migration only)!')
       return result.value
     }
+    report('error', 0, 3, 'Optimization failed')
     throw err
   }
+}
+
+function yieldToMain() {
+  return new Promise((resolve) => setTimeout(resolve, 0))
 }
 
 export async function exportVRMFile(vrm: VRM) {

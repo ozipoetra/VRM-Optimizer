@@ -14,6 +14,7 @@ import {
   formatFileSize,
   type OptimizationOptions,
   type ModelStats,
+  type OptimizationProgress,
 } from './utils/vrmOptimizer'
 import { isWebGPUSupported, loadVRMWebGPU } from './utils/vrmLoader'
 
@@ -33,6 +34,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabType>('optimize')
   const [useWebGPU, setUseWebGPU] = useState<boolean | null>(null)
   const [lastOptions, setLastOptions] = useState<OptimizationOptions | null>(null)
+  const [optimizationProgress, setOptimizationProgress] = useState<OptimizationProgress | null>(null)
 
   useEffect(() => {
     isWebGPUSupported().then((supported) => {
@@ -88,9 +90,12 @@ function App() {
       setError(null)
       setSuccess(null)
       setLastOptions(options)
+      setOptimizationProgress(null)
 
       try {
-        await optimizeVRM(vrm, options)
+        await optimizeVRM(vrm, options, (progress) => {
+          setOptimizationProgress(progress)
+        })
 
         const stats = getModelStats(vrm)
         setOptimizedStats(stats)
@@ -100,6 +105,7 @@ function App() {
         setError(err instanceof Error ? err.message : 'Failed to optimize model')
       } finally {
         setIsOptimizing(false)
+        setOptimizationProgress(null)
       }
     },
     [vrm]
@@ -321,6 +327,7 @@ function App() {
                         isExporting={isExporting}
                         hasVrm={!!vrm}
                         hasOptimized={!!optimizedStats}
+                        progress={optimizationProgress}
                       />
                     )}
 

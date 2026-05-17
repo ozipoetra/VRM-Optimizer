@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { OptimizationOptions, ModelStats } from '../utils/vrmOptimizer'
+import type { OptimizationOptions, ModelStats, OptimizationProgress } from '../utils/vrmOptimizer'
 
 interface OptimizationPanelProps {
   onOptimize: (options: OptimizationOptions) => void
@@ -10,6 +10,7 @@ interface OptimizationPanelProps {
   isExporting: boolean
   hasVrm: boolean
   hasOptimized: boolean
+  progress: OptimizationProgress | null
 }
 
 export function OptimizationPanel({
@@ -21,6 +22,7 @@ export function OptimizationPanel({
   isExporting,
   hasVrm,
   hasOptimized,
+  progress,
 }: OptimizationPanelProps) {
   const [migrateVRM0ToVRM1, setMigrateVRM0ToVRM1] = useState(true)
   const [atlasResolution, setAtlasResolution] = useState(2048)
@@ -199,6 +201,38 @@ export function OptimizationPanel({
       </div>
 
       {/* Optimize Button */}
+      {isOptimizing && progress && (
+        <div className="card bg-base-100 border border-base-300 p-4 mb-4">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="loading loading-spinner loading-sm text-primary"></span>
+            <span className="text-sm font-medium">{progress.message}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              <div className="flex justify-between text-xs text-base-content/50 mb-1">
+                <span>Step {progress.current} of {progress.total}</span>
+                <span>{Math.round((progress.current / progress.total) * 100)}%</span>
+              </div>
+              <progress
+                className="progress progress-primary w-full"
+                value={progress.current}
+                max={progress.total}
+              ></progress>
+            </div>
+          </div>
+          <div className="flex gap-1 mt-2">
+            {['migrating', 'atlas', 'simplify'].map((step, i) => (
+              <div
+                key={step}
+                className={`h-1 flex-1 rounded-full transition-colors ${
+                  i < progress.current ? 'bg-primary' : 'bg-base-300'
+                }`}
+              ></div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <button
         onClick={handleOptimize}
         disabled={isOptimizing}
