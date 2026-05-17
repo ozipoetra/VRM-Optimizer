@@ -11,7 +11,6 @@ interface VRMViewerProps {
 
 export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rendererRef = useRef<any>(null)
   const sceneRef = useRef<THREE.Scene | null>(null)
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null)
@@ -34,7 +33,6 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
     const camera = new THREE.PerspectiveCamera(30, width / height, 0.1, 1000)
     camera.position.set(0, 1.3, 3)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let renderer: any
     let rendererLabel = 'WebGL'
 
@@ -44,7 +42,7 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
         rendererLabel = 'WebGPU'
       } catch {
         renderer = createWebGLRenderer()
-        rendererLabel = 'WebGL (fallback)'
+        rendererLabel = 'WebGL'
       }
     } else {
       renderer = createWebGLRenderer()
@@ -89,7 +87,7 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
 
     sceneRef.current = scene
     cameraRef.current = camera
-    rendererRef.current = renderer as unknown as THREE.WebGLRenderer
+    rendererRef.current = renderer
     controlsRef.current = controls
 
     return { scene, camera, renderer, controls }
@@ -185,12 +183,15 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
   }, [vrm])
 
   return (
-    <div className="relative w-full h-full">
-      <div ref={containerRef} className="w-full h-full rounded-lg overflow-hidden" />
-      <div className="absolute top-3 right-3 flex gap-2">
-        <span className="px-2 py-1 bg-white/10 backdrop-blur-sm text-white/60 text-xs rounded-lg">
+    <div className="relative w-full h-full rounded-xl overflow-hidden">
+      <div ref={containerRef} className="w-full h-full" />
+
+      {/* Controls overlay */}
+      <div className="absolute top-3 right-3 flex flex-col gap-2">
+        <div className="badge badge-ghost gap-1">
+          <div className={`w-2 h-2 rounded-full ${rendererType === 'WebGPU' ? 'bg-success' : 'bg-warning'}`}></div>
           {rendererType || '...'}
-        </span>
+        </div>
         <button
           onClick={() => {
             if (controlsRef.current) {
@@ -199,19 +200,36 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
               controlsRef.current.update()
             }
           }}
-          className="px-3 py-1.5 bg-white/10 backdrop-blur-sm text-white text-sm rounded-lg hover:bg-white/20 transition-colors"
+          className="btn btn-sm btn-ghost gap-1"
         >
-          Reset Camera
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Reset
         </button>
       </div>
-      {!vrmReady && !vrm && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center text-white/50">
-            <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 10l-2 1m0 0l-2-1m0 0v2.5m20-7.5a2.25 2.25 0 012.25 2.25v10.5A2.25 2.25 0 0120.25 21H3.75A2.25 2.25 0 011.5 18.75V8.25A2.25 2.25 0 013.75 6h16.5z" />
+
+      {/* Help text */}
+      {vrm && (
+        <div className="absolute bottom-3 left-3">
+          <div className="badge badge-ghost gap-1 text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
             </svg>
-            <p className="text-lg font-medium">Upload a VRM file to preview</p>
-            <p className="text-sm mt-1">Supports .vrm format</p>
+            Drag to rotate · Scroll to zoom
+          </div>
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!vrmReady && !vrm && (
+        <div className="absolute inset-0 flex items-center justify-center bg-base-300/50">
+          <div className="text-center text-base-content/50">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            <p className="text-lg font-medium">Upload a VRM file</p>
+            <p className="text-sm mt-1">Drag & drop or browse to preview</p>
           </div>
         </div>
       )}

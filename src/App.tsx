@@ -119,123 +119,235 @@ function App() {
     setError(null)
   }, [])
 
-  const tabs: { id: TabType; label: string; icon: string }[] = [
-    { id: 'optimize', label: 'Optimize', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
-    { id: 'expressions', label: 'Expressions', icon: 'M15.182 15.182a4.5 4.5 0 010 6.364M14.02 14.02a4.5 4.5 0 010 6.364M8.818 15.182a4.5 4.5 0 000 6.364M14.5 6.5a4.5 4.5 0 01-5 0M12 8.5a2.5 2.5 0 010 5 2.5 2.5 0 010-5z' },
-    { id: 'info', label: 'Info', icon: 'M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a1.5 1.5 0 001.063 1.063l2.836-.708a.75.75 0 01.852 1.063l-.02.041a1.5 1.5 0 01-1.206.847 28.859 28.859 0 01-7.848 0 1.5 1.5 0 01-1.206-.847l-.02-.041a.75.75 0 01.852-1.063l2.836.708a1.5 1.5 0 001.063-1.063l-.708-2.836a.75.75 0 01.852-.852zM9.75 9.75a2.25 2.25 0 114.5 0 2.25 2.25 0 01-4.5 0z' },
-  ]
-
   if (useWebGPU === null) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
-        <div className="text-white/60">Initializing...</div>
+      <div className="min-h-screen bg-base-100 flex items-center justify-center">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-      <header className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+    <div className="drawer lg:drawer-open">
+      <input id="app-drawer" type="checkbox" className="drawer-toggle" />
+
+      <div className="drawer-content flex flex-col min-h-screen">
+        {/* Navbar */}
+        <div className="navbar bg-base-200 border-b border-base-300 px-4 sticky top-0 z-50">
+          <div className="navbar-start">
+            <label htmlFor="app-drawer" className="btn btn-ghost lg:hidden">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
-              <h1 className="text-xl font-bold">VRM Optimizer</h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className={`px-2 py-1 text-xs rounded-lg ${useWebGPU ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
-                {useWebGPU ? 'WebGPU' : 'WebGL'}
-              </span>
-              {fileName && (
-                <div className="text-sm text-white/60">
-                  <span className="text-white/40">Loaded:</span> {fileName}
-                  {originalStats && (
-                    <span className="ml-2 text-white/40">({formatFileSize(originalStats.fileSize)})</span>
-                  )}
-                </div>
-              )}
-              {vrm && (
-                <button
-                  onClick={handleNewModel}
-                  className="px-3 py-1.5 text-sm text-white/60 hover:text-white border border-white/20 rounded-lg hover:border-white/40 transition-colors"
-                >
-                  New Model
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        {error && (
-          <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm">
-            {error}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="h-[500px]">
-                <VRMViewer vrm={optimizedVrm || vrm} useWebGPU={useWebGPU} />
+            </label>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-primary-content" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
               </div>
+              <h1 className="text-lg font-bold hidden sm:block">VRM Optimizer</h1>
             </div>
+          </div>
 
-            {!vrm && (
-              <FileUpload onFileSelect={handleFileSelect} isLoading={isLoading} />
+          <div className="navbar-center hidden lg:flex">
+            {fileName && (
+              <div className="flex items-center gap-2">
+                <span className="text-base-content/60 text-sm">Loaded:</span>
+                <span className="font-medium text-sm">{fileName}</span>
+                {originalStats && (
+                  <span className="text-base-content/40 text-sm">({formatFileSize(originalStats.fileSize)})</span>
+                )}
+              </div>
             )}
           </div>
 
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden">
+          <div className="navbar-end gap-2">
+            <div className={`badge ${useWebGPU ? 'badge-success badge-outline' : 'badge-warning badge-outline'} gap-1`}>
+              <div className="w-2 h-2 rounded-full bg-current"></div>
+              {useWebGPU ? 'WebGPU' : 'WebGL'}
+            </div>
             {vrm && (
-              <div className="flex border-b border-white/10">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 px-3 py-3 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 ${
-                      activeTab === tab.id
-                        ? 'bg-white/10 text-white border-b-2 border-blue-500'
-                        : 'text-white/50 hover:text-white/80 hover:bg-white/5'
-                    }`}
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={tab.icon} />
-                    </svg>
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
+              <button className="btn btn-ghost btn-sm gap-1" onClick={handleNewModel}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span className="hidden sm:inline">New Model</span>
+              </button>
             )}
-
-            <div className="p-5">
-              {activeTab === 'optimize' && (
-                <OptimizationPanel
-                  onOptimize={handleOptimize}
-                  onExport={handleExport}
-                  originalStats={originalStats}
-                  optimizedStats={optimizedStats}
-                  isOptimizing={isOptimizing}
-                  isExporting={isExporting}
-                  hasVrm={!!vrm}
-                  hasOptimized={!!optimizedStats}
-                />
-              )}
-
-              {activeTab === 'expressions' && (
-                <ExpressionControls vrm={vrm} />
-              )}
-
-              {activeTab === 'info' && (
-                <VRMInfo vrm={vrm} />
-              )}
-            </div>
           </div>
         </div>
-      </main>
+
+        {/* Main Content */}
+        <main className="flex-1 p-4 md:p-6">
+          {error && (
+            <div role="alert" className="alert alert-error mb-4 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-sm">{error}</span>
+              <button className="btn btn-ghost btn-xs" onClick={() => setError(null)}>Dismiss</button>
+            </div>
+          )}
+
+          <div className="flex flex-col xl:flex-row gap-6">
+            {/* Viewer Section */}
+            <div className="flex-1 space-y-4">
+              <div className="card bg-base-200 shadow-xl">
+                <div className="card-body p-3 md:p-4">
+                  <div className="h-[400px] sm:h-[500px] md:h-[550px]">
+                    <VRMViewer vrm={optimizedVrm || vrm} useWebGPU={useWebGPU} />
+                  </div>
+                </div>
+              </div>
+
+              {!vrm && (
+                <FileUpload onFileSelect={handleFileSelect} isLoading={isLoading} />
+              )}
+            </div>
+
+            {/* Sidebar Panel - visible on mobile as inline section */}
+            <div className="w-full xl:w-80 shrink-0">
+              <div className="card bg-base-200 shadow-xl sticky top-20">
+                <div className="card-body p-0">
+                  {/* Tabs */}
+                  <div role="tablist" className="tabs tabs-boxed tabs-lg bg-base-300 rounded-t-xl">
+                    <button
+                      role="tab"
+                      className={`tab gap-2 ${activeTab === 'optimize' ? 'tab-active' : ''}`}
+                      onClick={() => setActiveTab('optimize')}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span className="hidden sm:inline">Optimize</span>
+                    </button>
+                    <button
+                      role="tab"
+                      className={`tab gap-2 ${activeTab === 'expressions' ? 'tab-active' : ''}`}
+                      onClick={() => setActiveTab('expressions')}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="hidden sm:inline">Expressions</span>
+                    </button>
+                    <button
+                      role="tab"
+                      className={`tab gap-2 ${activeTab === 'info' ? 'tab-active' : ''}`}
+                      onClick={() => setActiveTab('info')}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="hidden sm:inline">Info</span>
+                    </button>
+                  </div>
+
+                  {/* Tab Content */}
+                  <div className="p-4">
+                    {activeTab === 'optimize' && (
+                      <OptimizationPanel
+                        onOptimize={handleOptimize}
+                        onExport={handleExport}
+                        originalStats={originalStats}
+                        optimizedStats={optimizedStats}
+                        isOptimizing={isOptimizing}
+                        isExporting={isExporting}
+                        hasVrm={!!vrm}
+                        hasOptimized={!!optimizedStats}
+                      />
+                    )}
+
+                    {activeTab === 'expressions' && (
+                      <ExpressionControls vrm={vrm} />
+                    )}
+
+                    {activeTab === 'info' && (
+                      <VRMInfo vrm={vrm} />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="footer footer-center p-4 bg-base-200 border-t border-base-300 text-base-content/60 text-sm">
+          <aside>
+            <p>VRM Optimizer — Built with React, Three.js & DaisyUI</p>
+          </aside>
+        </footer>
+      </div>
+
+      {/* Drawer Sidebar */}
+      <div className="drawer-side z-50">
+        <label htmlFor="app-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+        <div className="menu bg-base-200 min-h-full w-72 p-4">
+          <div className="flex items-center gap-3 px-2 mb-4">
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+              <svg className="w-6 h-6 text-primary-content" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="font-bold text-lg">VRM Optimizer</h2>
+              <p className="text-xs text-base-content/50">Model Optimization Tool</p>
+            </div>
+          </div>
+
+          <div className="divider my-2"></div>
+
+          <ul className="menu menu-lg gap-1">
+            <li>
+              <button
+                className={`gap-3 ${activeTab === 'optimize' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('optimize'); document.getElementById('app-drawer')?.click() }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Optimize
+              </button>
+            </li>
+            <li>
+              <button
+                className={`gap-3 ${activeTab === 'expressions' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('expressions'); document.getElementById('app-drawer')?.click() }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Expressions
+              </button>
+            </li>
+            <li>
+              <button
+                className={`gap-3 ${activeTab === 'info' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('info'); document.getElementById('app-drawer')?.click() }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Model Info
+              </button>
+            </li>
+          </ul>
+
+          <div className="divider my-2"></div>
+
+          {fileName && (
+            <div className="px-2">
+              <p className="text-xs text-base-content/50 mb-1">Current Model</p>
+              <p className="text-sm font-medium truncate">{fileName}</p>
+              {originalStats && (
+                <p className="text-xs text-base-content/40">{formatFileSize(originalStats.fileSize)}</p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

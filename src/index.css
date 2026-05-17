@@ -1,4 +1,41 @@
 @import "tailwindcss";
+@plugin "daisyui";
+@plugin "daisyui/theme" {
+  name: "vrm-optimizer";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: oklch(15% 0.02 260);
+  --color-base-200: oklch(20% 0.03 260);
+  --color-base-300: oklch(25% 0.04 260);
+  --color-base-content: oklch(90% 0.02 260);
+  --color-primary: oklch(65% 0.25 250);
+  --color-primary-content: oklch(98% 0.01 250);
+  --color-secondary: oklch(70% 0.2 180);
+  --color-secondary-content: oklch(98% 0.01 180);
+  --color-accent: oklch(75% 0.25 320);
+  --color-accent-content: oklch(98% 0.01 320);
+  --color-neutral: oklch(30% 0.05 260);
+  --color-neutral-content: oklch(90% 0.02 260);
+  --color-info: oklch(70% 0.2 220);
+  --color-info-content: oklch(98% 0.01 220);
+  --color-success: oklch(70% 0.2 150);
+  --color-success-content: oklch(98% 0.01 150);
+  --color-warning: oklch(80% 0.2 80);
+  --color-warning-content: oklch(20% 0.05 80);
+  --color-error: oklch(65% 0.3 30);
+  --color-error-content: oklch(98% 0.01 30);
+
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
 
 * {
   margin: 0;
@@ -14,30 +51,4 @@ body {
 
 #root {
   min-height: 100vh;
-}
-
-input[type="range"] {
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.1);
-  outline: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #3b82f6;
-  cursor: pointer;
-}
-
-input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #3b82f6;
-  cursor: pointer;
-  border: none;
 }

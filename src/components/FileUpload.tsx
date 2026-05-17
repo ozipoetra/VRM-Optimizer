@@ -35,25 +35,48 @@ export function FileUpload({ onFileSelect, isLoading }: FileUploadProps) {
 
   return (
     <div
-      className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center cursor-pointer hover:border-white/40 transition-colors"
+      className="card bg-base-200 shadow-xl"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onClick={() => inputRef.current?.click()}
     >
-      <input
-        ref={inputRef}
-        type="file"
-        accept=".vrm"
-        onChange={handleFileChange}
-        className="hidden"
-      />
-      <svg className="w-12 h-12 mx-auto mb-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-      </svg>
-      <p className="text-white/70 font-medium">
-        {isLoading ? 'Loading...' : 'Drop VRM file here or click to browse'}
-      </p>
-      <p className="text-white/40 text-sm mt-1">Only .vrm files are supported</p>
+      <div className="card-body items-center text-center py-12 cursor-pointer hover:bg-base-300/50 transition-colors">
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".vrm"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+
+        {isLoading ? (
+          <>
+            <span className="loading loading-spinner loading-lg text-primary"></span>
+            <h3 className="card-title">Loading model...</h3>
+            <p className="text-base-content/60 text-sm">Parsing VRM file</p>
+          </>
+        ) : (
+          <>
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3" />
+              </svg>
+            </div>
+            <h3 className="card-title">Upload VRM Model</h3>
+            <p className="text-base-content/60 text-sm">
+              Drag & drop your <code className="badge badge-ghost badge-sm">.vrm</code> file here
+            </p>
+            <div className="card-actions mt-2">
+              <button className="btn btn-primary btn-sm gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.182 16.318A4.486 4.486 0 0012.016 15a4.486 4.486 0 00-3.198 1.318M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Browse Files
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   )
 }
