@@ -94,6 +94,32 @@ export function VRMViewer({ vrm, useWebGPU, isPaused }: VRMViewerProps) {
     return { scene, camera, renderer, controls }
   }, [useWebGPU])
 
+  const animateRef = useRef<(() => void) | null>(null)
+
+  const startAnimation = useCallback(() => {
+    const animate = () => {
+      animationIdRef.current = requestAnimationFrame(animate)
+
+      if (isPaused) return
+
+      const delta = timerRef.current.getDelta()
+
+      if (currentVRMRef.current) {
+        currentVRMRef.current.update(delta)
+      }
+
+      if (controlsRef.current) {
+        controlsRef.current.update()
+      }
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current)
+      }
+    }
+
+    animateRef.current = animate
+    animate()
+  }, [isPaused])
+
   useEffect(() => {
     let cleanup: (() => void) | null = null
 
@@ -101,24 +127,7 @@ export function VRMViewer({ vrm, useWebGPU, isPaused }: VRMViewerProps) {
       const result = await setupScene()
       if (!result) return
 
-      const { scene, camera, renderer, controls } = result
-
-      const animate = () => {
-        animationIdRef.current = requestAnimationFrame(animate)
-
-        if (isPaused) return
-
-        const delta = timerRef.current.getDelta()
-
-        if (currentVRMRef.current) {
-          currentVRMRef.current.update(delta)
-        }
-
-        controls.update()
-        renderer.render(scene, camera)
-      }
-
-      animate()
+      const { camera, renderer, controls } = result
 
       const handleResize = () => {
         if (!containerRef.current) return
@@ -130,6 +139,10 @@ export function VRMViewer({ vrm, useWebGPU, isPaused }: VRMViewerProps) {
       }
 
       window.addEventListener('resize', handleResize)
+
+      if (!isPaused) {
+        startAnimation()
+      }
 
       cleanup = () => {
         cancelAnimationFrame(animationIdRef.current)
@@ -144,7 +157,16 @@ export function VRMViewer({ vrm, useWebGPU, isPaused }: VRMViewerProps) {
     return () => {
       cleanup?.()
     }
-  }, [setupScene])
+  }, [setupScene, startAnimation, isPaused])
+
+  useEffect(() => {
+    if (isPaused) {
+      cancelAnimationFrame(animationIdRef.current)
+      animationIdRef.current = 0
+    } else if (animateRef.current) {
+      animateRef.current()
+    }
+  }, [isPaused])
 
   useEffect(() => {
     if (!sceneRef.current) return
