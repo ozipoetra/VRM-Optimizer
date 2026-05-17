@@ -41,17 +41,37 @@ export function OptimizationPanel({
     return Math.round(((original - optimized) / original) * 100)
   }
 
+  if (!hasVrm) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-base-content/40">
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-2.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <p className="text-sm font-medium">No model loaded</p>
+        <p className="text-xs mt-1">Upload a VRM file to optimize</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Settings */}
-      <fieldset className="fieldset">
-        <legend className="fieldset-legend text-base font-semibold">Optimization Settings</legend>
+      <div className="space-y-4">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-base-content/50">Settings</h3>
 
         {/* VRM0 to VRM1 Migration */}
-        <div className="flex items-center justify-between py-2">
-          <div>
-            <label className="font-medium text-sm">VRM0 → VRM1</label>
-            <p className="text-xs text-base-content/50">Migrate legacy format</p>
+        <div className="flex items-center justify-between p-3 bg-base-100 rounded-xl border border-base-300">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+              </svg>
+            </div>
+            <div>
+              <label className="font-medium text-sm">VRM0 → VRM1</label>
+              <p className="text-xs text-base-content/50">Migrate legacy format</p>
+            </div>
           </div>
           <input
             type="checkbox"
@@ -61,13 +81,20 @@ export function OptimizationPanel({
           />
         </div>
 
-        <div className="divider my-1"></div>
-
         {/* Atlas Resolution */}
-        <div className="py-2">
-          <div className="flex justify-between items-center mb-1">
-            <label className="font-medium text-sm">Atlas Resolution</label>
-            <span className="badge badge-primary badge-sm">{atlasResolution}px</span>
+        <div className="p-3 bg-base-100 rounded-xl border border-base-300">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <div className="flex justify-between items-center">
+                <label className="font-medium text-sm">Atlas Resolution</label>
+                <span className="badge badge-primary badge-sm">{atlasResolution}px</span>
+              </div>
+            </div>
           </div>
           <input
             type="range"
@@ -78,19 +105,28 @@ export function OptimizationPanel({
             onChange={(e) => setAtlasResolution(Number(e.target.value))}
             className="range range-primary range-sm"
           />
-          <div className="flex justify-between text-xs text-base-content/40 mt-1">
-            <span>512</span>
-            <span>4096</span>
+          <div className="flex justify-between text-xs text-base-content/40 mt-2">
+            <span>512px</span>
+            <span>1024</span>
+            <span>2048</span>
+            <span>4096px</span>
           </div>
         </div>
 
-        <div className="divider my-1"></div>
-
         {/* Simplify Ratio */}
-        <div className="py-2">
-          <div className="flex justify-between items-center mb-1">
-            <label className="font-medium text-sm">Mesh Simplify</label>
-            <span className="badge badge-secondary badge-sm">{Math.round(simplifyRatio * 100)}%</span>
+        <div className="p-3 bg-base-100 rounded-xl border border-base-300">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <div className="flex justify-between items-center">
+                <label className="font-medium text-sm">Mesh Simplify</label>
+                <span className="badge badge-accent badge-sm">{Math.round(simplifyRatio * 100)}%</span>
+              </div>
+            </div>
           </div>
           <input
             type="range"
@@ -99,36 +135,41 @@ export function OptimizationPanel({
             step="0.1"
             value={simplifyRatio}
             onChange={(e) => setSimplifyRatio(Number(e.target.value))}
-            className="range range-secondary range-sm"
+            className="range range-accent range-sm"
           />
-          <div className="flex justify-between text-xs text-base-content/40 mt-1">
-            <span>More</span>
-            <span>Less</span>
+          <div className="flex justify-between text-xs text-base-content/40 mt-2">
+            <span>More simplified</span>
+            <span>Less simplified</span>
           </div>
         </div>
 
-        <div className="divider my-1"></div>
-
         {/* Texture Compression */}
-        <div className="flex items-center justify-between py-2">
-          <div>
-            <label className="font-medium text-sm">KTX2 Compression</label>
-            <p className="text-xs text-base-content/50">UASTC texture format</p>
+        <div className="flex items-center justify-between p-3 bg-base-100 rounded-xl border border-base-300">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-info" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <div>
+              <label className="font-medium text-sm">KTX2 Compression</label>
+              <p className="text-xs text-base-content/50">UASTC texture format</p>
+            </div>
           </div>
           <input
             type="checkbox"
-            className="toggle toggle-accent"
+            className="toggle toggle-info"
             checked={textureCompression}
             onChange={(e) => setTextureCompression(e.target.checked)}
           />
         </div>
-      </fieldset>
+      </div>
 
       {/* Optimize Button */}
       <button
         onClick={handleOptimize}
-        disabled={!hasVrm || isOptimizing}
-        className="btn btn-primary btn-block gap-2"
+        disabled={isOptimizing}
+        className="btn btn-primary btn-block gap-2 shadow-lg shadow-primary/20"
       >
         {isOptimizing ? (
           <>
@@ -147,38 +188,36 @@ export function OptimizationPanel({
 
       {/* Statistics */}
       {originalStats && (
-        <div className="card bg-base-300/50">
-          <div className="card-body p-4">
-            <h3 className="card-title text-sm">Statistics</h3>
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-base-content/50">Statistics</h3>
 
-            <div className="stats stats-vertical shadow-sm bg-base-100">
-              <div className="stat place-items-center py-3 px-4">
-                <div className="stat-title text-xs">Vertices</div>
-                <div className="stat-value text-lg">{originalStats.vertexCount.toLocaleString()}</div>
-                {optimizedStats && (
-                  <div className="stat-desc text-success">
-                    {optimizedStats.vertexCount.toLocaleString()} ({getReduction(originalStats.vertexCount, optimizedStats.vertexCount)}% ↓)
-                  </div>
-                )}
-              </div>
-              <div className="stat place-items-center py-3 px-4">
-                <div className="stat-title text-xs">Triangles</div>
-                <div className="stat-value text-lg">{originalStats.triangleCount.toLocaleString()}</div>
-                {optimizedStats && (
-                  <div className="stat-desc text-success">
-                    {optimizedStats.triangleCount.toLocaleString()} ({getReduction(originalStats.triangleCount, optimizedStats.triangleCount)}% ↓)
-                  </div>
-                )}
-              </div>
-              <div className="stat place-items-center py-3 px-4">
-                <div className="stat-title text-xs">Materials</div>
-                <div className="stat-value text-lg">{originalStats.materialCount}</div>
-                {optimizedStats && (
-                  <div className="stat-desc text-success">
-                    {optimizedStats.materialCount} ({getReduction(originalStats.materialCount, optimizedStats.materialCount)}% ↓)
-                  </div>
-                )}
-              </div>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="stat bg-base-100 rounded-xl border border-base-300 py-3 px-2">
+              <div className="stat-title text-[10px]">Vertices</div>
+              <div className="stat-value text-base text-primary">{originalStats.vertexCount > 9999 ? `${(originalStats.vertexCount / 1000).toFixed(1)}k` : originalStats.vertexCount.toLocaleString()}</div>
+              {optimizedStats && (
+                <div className="stat-desc text-success text-[10px]">
+                  {getReduction(originalStats.vertexCount, optimizedStats.vertexCount)}% ↓
+                </div>
+              )}
+            </div>
+            <div className="stat bg-base-100 rounded-xl border border-base-300 py-3 px-2">
+              <div className="stat-title text-[10px]">Triangles</div>
+              <div className="stat-value text-base text-secondary">{originalStats.triangleCount > 9999 ? `${(originalStats.triangleCount / 1000).toFixed(1)}k` : originalStats.triangleCount.toLocaleString()}</div>
+              {optimizedStats && (
+                <div className="stat-desc text-success text-[10px]">
+                  {getReduction(originalStats.triangleCount, optimizedStats.triangleCount)}% ↓
+                </div>
+              )}
+            </div>
+            <div className="stat bg-base-100 rounded-xl border border-base-300 py-3 px-2">
+              <div className="stat-title text-[10px]">Materials</div>
+              <div className="stat-value text-base text-accent">{originalStats.materialCount}</div>
+              {optimizedStats && (
+                <div className="stat-desc text-success text-[10px]">
+                  {getReduction(originalStats.materialCount, optimizedStats.materialCount)}% ↓
+                </div>
+              )}
             </div>
           </div>
         </div>

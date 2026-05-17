@@ -183,15 +183,25 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
   }, [vrm])
 
   return (
-    <div className="relative w-full h-full rounded-xl overflow-hidden">
+    <div className="relative w-full h-full">
       <div ref={containerRef} className="w-full h-full" />
 
-      {/* Controls overlay */}
-      <div className="absolute top-3 right-3 flex flex-col gap-2">
-        <div className="badge badge-ghost gap-1">
-          <div className={`w-2 h-2 rounded-full ${rendererType === 'WebGPU' ? 'bg-success' : 'bg-warning'}`}></div>
-          {rendererType || '...'}
+      {/* Top controls */}
+      <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
+        <div className="flex items-center gap-2">
+          <div className="mockup-window bg-base-300/80 backdrop-blur-sm">
+            <div className="flex items-center gap-1 px-3 py-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-error/70"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-warning/70"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-success/70"></div>
+            </div>
+          </div>
+          <div className={`badge ${rendererType === 'WebGPU' ? 'badge-success badge-outline' : 'badge-warning badge-outline'} gap-1.5`}>
+            <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
+            {rendererType || '...'}
+          </div>
         </div>
+
         <button
           onClick={() => {
             if (controlsRef.current) {
@@ -200,7 +210,7 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
               controlsRef.current.update()
             }
           }}
-          className="btn btn-sm btn-ghost gap-1"
+          className="btn btn-sm btn-ghost bg-base-300/80 backdrop-blur-sm gap-1.5 hover:bg-base-300"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -209,10 +219,10 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
         </button>
       </div>
 
-      {/* Help text */}
+      {/* Bottom info */}
       {vrm && (
-        <div className="absolute bottom-3 left-3">
-          <div className="badge badge-ghost gap-1 text-xs">
+        <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+          <div className="badge badge-ghost bg-base-300/80 backdrop-blur-sm gap-1.5">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
             </svg>
@@ -223,12 +233,14 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
 
       {/* Empty state */}
       {!vrmReady && !vrm && (
-        <div className="absolute inset-0 flex items-center justify-center bg-base-300/50">
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-base-300 to-base-200">
           <div className="text-center text-base-content/50">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            <p className="text-lg font-medium">Upload a VRM file</p>
+            <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-base-100/50 backdrop-blur-sm flex items-center justify-center shadow-xl">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <p className="text-lg font-semibold">Upload a VRM file</p>
             <p className="text-sm mt-1">Drag & drop or browse to preview</p>
           </div>
         </div>
