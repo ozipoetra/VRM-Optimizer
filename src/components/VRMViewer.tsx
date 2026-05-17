@@ -17,7 +17,7 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
   const controlsRef = useRef<OrbitControls | null>(null)
   const animationIdRef = useRef<number>(0)
   const currentVRMRef = useRef<VRM | null>(null)
-  const clockRef = useRef<THREE.Clock>(new THREE.Clock())
+  const timerRef = useRef<THREE.Timer>(new THREE.Timer())
   const [vrmReady, setVrmReady] = useState(false)
   const [rendererType, setRendererType] = useState<string>('')
 
@@ -105,7 +105,7 @@ export function VRMViewer({ vrm, useWebGPU }: VRMViewerProps) {
       const animate = () => {
         animationIdRef.current = requestAnimationFrame(animate)
 
-        const delta = clockRef.current.getDelta()
+        const delta = timerRef.current.getDelta()
 
         if (currentVRMRef.current) {
           currentVRMRef.current.update(delta)
